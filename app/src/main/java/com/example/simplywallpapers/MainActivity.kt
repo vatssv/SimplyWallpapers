@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import com.example.wallpaperrotator.WallpaperScheduler
@@ -72,6 +73,8 @@ class MainActivity : Activity() {
     private fun setWallpaper(intervalInHours: Int) {
         val imageDataSource = ImageDataSource(this)
         val imagePaths = imageDataSource.getImagesFromFolder(this.folderPath)
+        Log.d("MainActivity", "Image paths: $imagePaths")
+        Log.d("MainActivity", "Folder path: $folderPath")
         if (imagePaths.isNotEmpty()) {
             WallpaperScheduler.scheduleWallpaperChanges(this, this.folderPath, imagePaths, intervalInHours)
             Toast.makeText(this, "Wallpaper rotation scheduled!", Toast.LENGTH_SHORT).show()

@@ -1,21 +1,29 @@
-package com.example.wallpaperrotator.wallpaper
+package com.example.wallpaperrotator
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.app.WallpaperManager
+import android.content.Context
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Log
+import java.io.IOException
 
-class WallpaperSetter {
+class WallpaperSetter(private val context: Context) {
 
-    companion object {
-        fun setWallpaper(context: Context, imagePath: String) {
-            val bitmap = BitmapFactory.decodeFile(imagePath)
-            val wallpaperManager = WallpaperManager.getInstance(context)
-            try {
+    fun setWallpaper(imagePath: String) {
+        Log.d("WallpaperSetter", "Setting wallpaper: $imagePath")
+        val wallpaperManager = WallpaperManager.getInstance(context)
+        try {
+            val uri = Uri.parse(imagePath)
+            val inputStream = context.contentResolver.openInputStream(uri)
+            if (inputStream != null) {
+                val bitmap = BitmapFactory.decodeStream(inputStream)
                 wallpaperManager.setBitmap(bitmap)
-            } catch (e: Exception) {
-                // Handle potential exceptions
+                inputStream.close()
+            } else {
+                Log.e("WallpaperSetter", "Could not open input stream for URI: $uri")
             }
+        } catch (e: IOException) {
+            Log.e("WallpaperSetter", "Error setting wallpaper", e)
         }
     }
 }

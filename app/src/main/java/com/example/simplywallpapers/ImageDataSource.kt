@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.ui.graphics.vector.path
 import androidx.documentfile.provider.DocumentFile
 
 class ImageDataSource(private val context: Context) {
@@ -13,6 +14,7 @@ class ImageDataSource(private val context: Context) {
     fun getImagesFromFolder(folderUriString: String?): List<String> {
         val imagePaths = mutableListOf<String>()
         if (folderUriString == null) {
+            Log.d("ImageDataSource", "Folder URI is null")
             return imagePaths
         }
 
@@ -44,14 +46,14 @@ class ImageDataSource(private val context: Context) {
     }
 
     private fun getImagePathFromUri(contentResolver: ContentResolver, uri: Uri): String? {
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        var cursor = contentResolver.query(uri, projection, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                return it.getString(columnIndex)
-            }
+        Log.d("ImageDataSource", "getImagePathFromUri called with URI: $uri")
+        val documentFile = DocumentFile.fromSingleUri(context, uri)
+        if (documentFile != null && documentFile.isFile) {
+            Log.d("ImageDataSource", "File name: ${documentFile.name}")
+            return documentFile.uri.toString()
+        } else {
+            Log.e("ImageDataSource", "Could not get file from URI: $uri")
+            return null
         }
-        return null
     }
 }
